@@ -1,9 +1,11 @@
 
-CUDA_INCLUDE=/home/work/cuda-9.0/include/
-CUDA_RT_LIBS=/home/work/cuda-9.0/lib64/
-CUDA_LIBS=/home/work/cuda-9.0/lib64/stubs/
-CUDNN_INCLUDE=/home/work/cudnn/cudnn_v7/cuda/include/
-CUDNN_LIBS=/home/work/cudnn/cudnn_v7/cuda/lib64/
+CUDA_INCLUDE=/home/work/cuda-8.0/include/
+CUDA_RT_LIBS=/home/work/cuda-8.0/lib64/
+CUDA_LIBS=/home/work/cuda-8.0/lib64/stubs/
+CUDNN_INCLUDE=/home/work/cudnn/cudnn_v6/cuda/include/
+CUDNN_LIBS=/home/work/cudnn/cudnn_v6/cuda/lib64/
+SRC_DIR = ./src
+BIN_DIR = ./bin
 
 
 CC = g++
@@ -13,7 +15,6 @@ INCLUDE = -I$(CUDA_INCLUDE) \
 LIBRARY = -L$(CUDA_LIBS) \
           -L$(CUDNN_LIBS) \
           -L$(CUDA_RT_LIBS)
-SRC_DIR = ./src
 SRCS = $(wildcard $(SRC_DIR)/*.cc)
 targets = $(foreach src, $(SRCS), $(basename $(src)).a)
 $(info $(SRCS))
@@ -23,8 +24,9 @@ all: $(targets)
 
 $(SRC_DIR)/%.a: $(SRC_DIR)/%.cc
 	$(CC) $(CFLAGS) $(INCLUDE) $(LIBRARY) -o $@ $<  
-
+	mv -f $@ ./$(BIN_DIR)/
 
 .PHONY: all clean
 clean:
+	rm -rf $(BIN_DIR)/*.a
 	rm -rf $(SRC_DIR)/*.a

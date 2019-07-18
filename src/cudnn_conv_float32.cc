@@ -133,11 +133,11 @@ struct TrainingContext {
 
     // Set input tensor
     checkCUDNN(cudnnSetTensor4dDescriptor(
-        srcTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, n, c, h, w));
+        srcTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_INT8, n, c, h, w));
 
     // Set convolution filter
     checkCUDNN(cudnnSetFilter4dDescriptor(filterDesc,
-                                          CUDNN_DATA_FLOAT,
+                                          CUDNN_DATA_INT8,
                                           CUDNN_TENSOR_NCHW,
                                           conv.out_channels,
                                           conv.in_channels,
@@ -159,14 +159,14 @@ struct TrainingContext {
                                                dilation_h,
                                                dilation_w,
                                                CUDNN_CONVOLUTION,
-                                               CUDNN_DATA_FLOAT));
+                                               CUDNN_DATA_INT32));
     // Compute output dimension
     checkCUDNN(cudnnGetConvolution2dForwardOutputDim(
         convDesc, srcTensorDesc, filterDesc, &n, &c, &h, &w));
 
     // Set output tensor
     checkCUDNN(cudnnSetTensor4dDescriptor(
-        dstTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, n, c, h, w));
+        dstTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_INT8, n, c, h, w));
 
     // Retrieve orward pass algorithm. We can either hardcode it to a specific
     // algorithm or use cudnnGetConvolutionForwardAlgorithm. For the purpose

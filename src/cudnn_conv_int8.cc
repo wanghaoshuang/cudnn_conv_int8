@@ -240,13 +240,13 @@ int main() {
   int iterations = 10000;
 
   // input dimensions
-  size_t width = 960;
+  size_t width = 961;
   size_t height = 600;
-  size_t channels = 3;
+  size_t channels = 4;
   int batch_size = 1;
 
   // Create layer architecture
-  int out_channels = 1;
+  int out_channels = 4;
   int kernel_size = 3;
   ConvolutionLayer conv1(
       (int)channels, out_channels, kernel_size, (int)width, (int)height);
