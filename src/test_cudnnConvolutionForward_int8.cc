@@ -19,7 +19,9 @@
 #include "device_launch_parameters.h"
 
 #define DATA_TYPE int8_t
+#define OUT_DATA_TYPE float
 #define CUDNN_DATA_TYPE CUDNN_DATA_INT8
+#define CUDNN_OUT_TYPE CUDNN_DATA_FLOAT
 #define CUDNN_COMPUTE_TYPE CUDNN_DATA_INT32
 
 /** Error handling from https://developer.nvidia.com/cuDNN */
@@ -180,7 +182,7 @@ struct TrainingContext {
     printf("yDesc: n=%d; c=%d; h=%d; w=%d\n",n,c,h,w);
     // Set output tensor (Changed CUDNN_DATA_FLOAT to CUDNN_DATA_INT8, following the manual)
     checkCUDNN(cudnnSetTensor4dDescriptor(
-        dstTensorDesc, CUDNN_TENSOR_NHWC, CUDNN_DATA_TYPE, n, c, h, w));
+        dstTensorDesc, CUDNN_TENSOR_NHWC, CUDNN_OUT_TYPE, n, c, h, w));
 
     // Retrieve orward pass algorithm. We can either hardcode it to a specific
     // algorithm or use cudnnGetConvolutionForwardAlgorithm. For the purpose
@@ -221,7 +223,7 @@ struct TrainingContext {
 
   /** Execute forward pass */
   void ForwardPropagation(DATA_TYPE* data,
-                          DATA_TYPE* conv,
+                          OUT_DATA_TYPE* conv,
                           DATA_TYPE* pconv,
                           void* workspace) {
     float alpha = 1.0f;
@@ -274,24 +276,24 @@ int main() {
   size_t img_data_size = 1 * width * height * channels;
   DATA_TYPE* img_host_data = (DATA_TYPE*)malloc(sizeof(DATA_TYPE) * img_data_size);
   for (int i=0; i< img_data_size; i++) {
-    img_host_data[i] = static_cast<DATA_TYPE>(-100);
+    img_host_data[i] = static_cast<DATA_TYPE>(1);
   }
 
 
   // output
   size_t out_data_size = context.m_batchSize * conv.out_channels * conv.out_height * conv.out_width;
-  DATA_TYPE* out_host_data = (DATA_TYPE*)malloc(sizeof(DATA_TYPE) * out_data_size);
+  OUT_DATA_TYPE* out_host_data = (OUT_DATA_TYPE*)malloc(sizeof(OUT_DATA_TYPE) * out_data_size);
   for (int i=0; i< out_data_size; i++) {
-    out_host_data[i] = static_cast<DATA_TYPE>(0);
+    out_host_data[i] = static_cast<OUT_DATA_TYPE>(0);
   }
 
 
   DATA_TYPE* img_device_data;
   checkCudaErrors(cudaMalloc(&img_device_data,
                              sizeof(DATA_TYPE) * img_data_size));
-  DATA_TYPE* out_device_data;
+  OUT_DATA_TYPE* out_device_data;
   checkCudaErrors(cudaMalloc(&out_device_data,
-                             sizeof(DATA_TYPE) * out_data_size));
+                             sizeof(OUT_DATA_TYPE) * out_data_size));
 
   DATA_TYPE* filter_device_data;
   checkCudaErrors(cudaMalloc(&filter_device_data, sizeof(DATA_TYPE) * filter_data_size));
@@ -304,7 +306,7 @@ int main() {
 
   checkCudaErrors(cudaMemcpy(out_device_data,
                                   out_host_data,
-                                  sizeof(DATA_TYPE) * out_data_size,
+                                  sizeof(OUT_DATA_TYPE) * out_data_size,
                                   cudaMemcpyHostToDevice));
 
   checkCudaErrors(cudaMemcpy(filter_device_data,
@@ -350,12 +352,13 @@ int main() {
   printf("\nout_data_size: %d\n", out_data_size);
   cudaMemcpy(out_host_data,
           out_device_data,
-          sizeof(DATA_TYPE) * out_data_size,
+          sizeof(OUT_DATA_TYPE) * out_data_size,
           cudaMemcpyDeviceToHost);
   checkCudaErrors(cudaDeviceSynchronize());
   printf("out data: \n");
   for(int i=0; i<out_data_size; i++) {
-      printf("%"PRIi8"\t", out_host_data[i]);
+      // printf("%"PRIi8"\t", out_host_data[i]);
+      printf("%f\t", out_host_data[i]);
   }
   printf("\n");
   
