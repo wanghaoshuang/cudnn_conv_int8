@@ -133,11 +133,11 @@ struct TrainingContext {
 
     // Set input tensor
     checkCUDNN(cudnnSetTensor4dDescriptor(
-        srcTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_INT8, n, c, h, w));
+        srcTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, n, c, h, w));
 
     // Set convolution filter
     checkCUDNN(cudnnSetFilter4dDescriptor(filterDesc,
-                                          CUDNN_DATA_INT8,
+                                          CUDNN_DATA_FLOAT,
                                           CUDNN_TENSOR_NCHW,
                                           conv.out_channels,
                                           conv.in_channels,
@@ -159,14 +159,14 @@ struct TrainingContext {
                                                dilation_h,
                                                dilation_w,
                                                CUDNN_CONVOLUTION,
-                                               CUDNN_DATA_INT32));
+                                               CUDNN_DATA_FLOAT));
     // Compute output dimension
     checkCUDNN(cudnnGetConvolution2dForwardOutputDim(
         convDesc, srcTensorDesc, filterDesc, &n, &c, &h, &w));
 
     // Set output tensor
     checkCUDNN(cudnnSetTensor4dDescriptor(
-        dstTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_INT8, n, c, h, w));
+        dstTensorDesc, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, n, c, h, w));
 
     // Retrieve orward pass algorithm. We can either hardcode it to a specific
     // algorithm or use cudnnGetConvolutionForwardAlgorithm. For the purpose
@@ -228,17 +228,17 @@ struct TrainingContext {
 
 int main() {
   // parameters
-  int gpu = 0;
+  int gpu = 2;
   int iterations = 10000;
 
   // input dimensions
-  size_t width = 960;
-  size_t height = 600;
-  size_t channels = 3;
-  int batch_size = 1;
+  size_t width = 40;
+  size_t height = 40;
+  size_t channels = 256;
+  int batch_size = 16;
 
   // Create layer architecture
-  int out_channels = 1;
+  int out_channels = 512;
   int kernel_size = 3;
   ConvolutionLayer conv1(
       (int)channels, out_channels, kernel_size, (int)width, (int)height);
