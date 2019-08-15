@@ -10,3 +10,33 @@
 ## 测试内容
 
 
+## cudnn int8卷积和float32卷积运行时间
+width	40
+
+height	40
+
+channels	256	
+
+batch size	16
+
+out_channels	512	
+
+kernel_size	3
+
+gpu: P40
+
+cuda8
+
+cudnn6
+
+迭代一万次 forward过程求平均
+
+参数设置方式	随机数	
+
+int8 1.69416ms
+
+float32 6.618135ms
+
+
+文件cudnn_conv_int8.cc	cudnn_conv_float32.cc		
+
