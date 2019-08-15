@@ -236,17 +236,17 @@ struct TrainingContext {
 
 int main() {
   // parameters
-  int gpu = 0;
+  int gpu = 2;
   int iterations = 10000;
 
   // input dimensions
-  size_t width = 961;
-  size_t height = 600;
-  size_t channels = 4;
-  int batch_size = 1;
+  size_t width = 40;
+  size_t height = 40;
+  size_t channels = 256;
+  int batch_size = 16;
 
   // Create layer architecture
-  int out_channels = 4;
+  int out_channels = 512;
   int kernel_size = 3;
   ConvolutionLayer conv1(
       (int)channels, out_channels, kernel_size, (int)width, (int)height);
